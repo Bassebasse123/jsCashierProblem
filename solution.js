@@ -36,6 +36,7 @@ const createCashCounter = () => {
       "This is what the customer paid in €:",
       (paid / 100).toFixed(2)
     );
+    // calculate how much money to give back
     let change = paid - price;
     // if price is equal to paid, no change needed
     if (paid === price) {
@@ -48,7 +49,7 @@ const createCashCounter = () => {
       return "Not enough change, sorry."
     } else if (paid > price) {
       // ! Adding paid to cashBox
-      // Creating a variable that will always subtract the highest possible banknote from paidToCashbox and add it to cashbox until paidToCashbox is 0
+  
       cashBox.forEach((value) => {
         for (const amount in value) {
           while (paid >= amount) {
@@ -58,8 +59,7 @@ const createCashCounter = () => {
         }
       });
       // !
-      // ! Saving change to a variable, subtracting always highest banknote from change until change is 0 and remove those banknotes from cashbox
-      // I want to check if I have enough change in my cashbox (only appropriate change!! 500 is useless if i need to give back 450). If not, I will give back the paid to the customer and subtract it from the cashbox again. if yes, continue as usual
+      // ! Subtracting always highest banknote from change until change is 0 and remove those banknotes from cashbox
       console.log("This is the Change in €:", (change / 100).toFixed(2));
       const changeArr = [];
       cashBox.forEach((value) => {
@@ -80,4 +80,21 @@ const createCashCounter = () => {
 
 const cashCounter = createCashCounter();
 
+console.log(cashCounter(3250, 5000));
+console.log(cashCounter(3250, 5000));
+console.log(cashCounter(3250, 5000));
+console.log(cashCounter(3250, 5000));
+console.log(cashCounter(3250, 5000));
+console.log(cashCounter(3250, 5000));
+console.log(cashCounter(3250, 5000));
+console.log(cashCounter(3250, 5000));
+console.log(cashCounter(3250, 5000));
+console.log(cashCounter(3250, 5000));
+console.log(cashCounter(3250, 5000));
+console.log(cashCounter(3250, 5000));
+console.log(cashCounter(3250, 5000));
+console.log(cashCounter(3250, 5000));
+console.log(cashCounter(3250, 5000));
+console.log(cashCounter(3250, 5000));
+console.log(cashCounter(3250, 5000));
 console.log(cashCounter(3250, 5000));
