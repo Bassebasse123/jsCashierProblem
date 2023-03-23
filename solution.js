@@ -49,7 +49,7 @@ const createCashCounter = () => {
       )}€ short.`;
 
       /* if paid is higher than price:
-      - simulate the following: 
+      - simulate the following:
         1. Create new variables, so that originals dont change during simulation:
         2. Loop over the cashbox
         3. loop over each object
@@ -58,7 +58,7 @@ const createCashCounter = () => {
       - then the simulation does the same, but reverse for the change
         1. Loop over cashbox
         2. loop over each object
-        3. and while the banknote is smaller than the change, the banknote will be subtracted from the cashbox and at the same time it will be pushed to the changeArr. 
+        3. and while the banknote is smaller than the change, the banknote will be subtracted from the cashbox and at the same time it will be pushed to the changeArr.
         If its not, check next bank note and so on until all the change has been paid back.
         This way, the change is always given back in the most efficient way. (eg. change = 50€ will never be returned with [20€, 20€, 10€] but with [50€])
       - and finally I decided to check the length of the changeArr to determine if it is worthy of accepting the transaction. If the changeArr.length is higher than 12 (who wants to receive 12 coins for change?? ;) ), the transaction will be declined, otherwise the exact same code will be run again, but this time not as a simulation, but with the real cashBox.
@@ -115,9 +115,17 @@ const createCashCounter = () => {
             }
           }
         });
+        //! Added a function that returns an object containing the different banknotes in the change and how often they have appear
+        function transformArrayToObject(arr) {
+          const obj = {};
+          for (let i = 0; i < arr.length; i++) {
+            obj[arr[i]] = obj[arr[i]] ? obj[arr[i]] + 1 : 1;
+          }
+          return obj;
+        }
         console.log(
           "The most efficient way to hand out the change:",
-          changeArr
+          transformArrayToObject(changeArr)
         );
       }
       console.log("Updated Cashbox after transaction:");
@@ -149,3 +157,117 @@ console.log(cashCounter(2350, 5000));
 console.log(cashCounter(2350, 5000));
 console.log(cashCounter(5500, 5000));
 
+// Version without Comments:
+/* 
+const createCashCounter = () => {
+  let cashBox = [
+    { 5000: 10 },
+    { 2000: 10 },
+    { 1000: 10 },
+    { 500: 25 },
+    { 200: 25 },
+    { 100: 25 },
+    { 50: 25 },
+    { 20: 25 },
+    { 10: 25 },
+    { 5: 25 },
+    { 2: 25 },
+    { 1: 25 },
+  ];
+
+  const cashBoxNet = () => {
+    return cashBox.reduce((acc, curr, i) => {
+      for (const amount in curr) {
+        acc += amount * curr[amount];
+      }
+      return acc;
+    }, 0);
+  };
+
+  return (price, paid) => {
+    console.log("---TRANSACTION START---");
+    console.log(
+      "Cashbox total before transactions in € =",
+      (cashBoxNet() / 100).toFixed(2)
+    );
+    console.log("This is the price in €:", (price / 100).toFixed(2));
+    console.log(
+      "This is what the customer paid in €:",
+      (paid / 100).toFixed(2)
+    );
+    let change = paid - price;
+    if (paid === price) {
+      return `You payed appropriately, thanks man!`;
+    } else if (paid < price) {
+      return `Sorry, but your payment is ${((price - paid) / 100).toFixed(
+        2
+      )}€ short.`;
+    } else if (paid > price) {
+      let cashBoxSim = JSON.parse(JSON.stringify(cashBox));
+      let changeSim = change;
+      let paidSim = paid;
+      cashBoxSim.forEach((value) => {
+        for (const amount in value) {
+          while (paidSim >= amount) {
+            paidSim -= amount;
+            value[amount]++;
+          }
+        }
+      });
+
+      const changeArrSim = [];
+      cashBoxSim.forEach((value) => {
+        for (const amount in value) {
+          while (changeSim >= amount && value[amount] > 0) {
+            changeSim -= amount;
+            value[amount]--;
+            changeArrSim.push(amount);
+          }
+        }
+      });
+      if (changeArrSim.length > 12) {
+        return "Sorry mate, I can't give you appropriate change without emptying my coin pockets into your wallet.";
+      } else {
+        cashBox.forEach((value) => {
+          for (const amount in value) {
+            while (paid >= amount) {
+              paid -= amount;
+              value[amount]++;
+            }
+          }
+        });
+
+        console.log("This is the Change in €:", (change / 100).toFixed(2));
+        const changeArr = [];
+        cashBox.forEach((value) => {
+          for (const amount in value) {
+            while (change >= amount && value[amount] > 0) {
+              change -= amount;
+              value[amount]--;
+              changeArr.push(amount);
+            }
+          }
+        });
+
+        function transformArrayToObject(arr) {
+          const obj = {};
+          for (let i = 0; i < arr.length; i++) {
+            obj[arr[i]] = obj[arr[i]] ? obj[arr[i]] + 1 : 1;
+          }
+          return [obj];
+        }
+        console.log(
+          "The most efficient way to hand out the change:",
+          transformArrayToObject(changeArr)
+        );
+      }
+      console.log("Updated Cashbox after transaction:");
+      return cashBox;
+    }
+  };
+};
+
+const cashCounter = createCashCounter();
+
+console.log(cashCounter(5400, 10000));
+ */
